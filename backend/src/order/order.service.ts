@@ -1,4 +1,8 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  BadRequestException,
+  NotFoundException,
+} from '@nestjs/common';
 import { randomUUID } from 'crypto';
 import { FilmsRepository } from '../repository/films.repository';
 import { CreateOrderDto, OrderResultDto } from './dto/order.dto';
@@ -11,7 +15,20 @@ export class OrderService {
     const results: OrderResultDto[] = [];
 
     for (const ticket of dto.tickets) {
+      const session = await this.filmsRepository.findSession(
+        ticket.film,
+        ticket.session,
+      );
+
+      if (!session) {
+        throw new NotFoundException(`Film or session not found`);
+      }
+
       const seatKey = `${ticket.row}:${ticket.seat}`;
+
+      if (session.taken.includes(seatKey)) {
+        throw new BadRequestException(`Seat ${seatKey} is already taken`);
+      }
 
       const success = await this.filmsRepository.occupySeat(
         ticket.film,
@@ -20,9 +37,7 @@ export class OrderService {
       );
 
       if (!success) {
-        throw new BadRequestException(
-          `Seat ${seatKey} is already taken or session not found`,
-        );
+        throw new BadRequestException(`Seat ${seatKey} is already taken`);
       }
 
       const result = new OrderResultDto();

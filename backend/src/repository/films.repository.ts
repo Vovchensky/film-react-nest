@@ -26,6 +26,20 @@ export class FilmsRepository {
     return film.schedule;
   }
 
+  async findSession(
+    filmId: string,
+    sessionId: string,
+  ): Promise<IScheduleDoc | null> {
+    const film = await this.filmModel
+      .findOne({ id: filmId, 'schedule.id': sessionId }, { 'schedule.$': 1 })
+      .lean()
+      .exec();
+    if (!film || !film.schedule || film.schedule.length === 0) {
+      return null;
+    }
+    return film.schedule[0];
+  }
+
   async occupySeat(
     filmId: string,
     sessionId: string,

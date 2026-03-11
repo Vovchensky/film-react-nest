@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { FilmsRepository } from '../repository/films.repository';
 
 @Injectable()
@@ -13,7 +13,7 @@ export class FilmsService {
   async findSchedule(id: string) {
     const items = await this.filmsRepository.findSchedule(id);
     if (!items) {
-      return { total: 0, items: [] };
+      throw new NotFoundException(`Film with id ${id} not found`);
     }
     return { total: items.length, items };
   }
