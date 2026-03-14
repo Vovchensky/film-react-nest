@@ -1,36 +1,58 @@
-# FILM!
 
-## Установка
+# Film! — Сервис бронирования билетов в кинотеатр
+
+Бэкенд для онлайн-сервиса бронирования билетов. Управление фильмами, расписанием сеансов и бронированием мест. REST API на Nest.js с хранением данных в MongoDB.
+
+<p align="center">
+  <img src="./screenshot.jpg" alt="Скриншот проекта">
+</p>
+
+## Технологии
+
+- Nest.js (контроллеры, сервисы, модули, DTO)
+- TypeScript
+- MongoDB, Mongoose (схемы, поддокументы)
+- REST API (OpenAPI-спецификация)
+- Раздача статического контента
+- React (фронтенд — в заготовке)
+
+## Установка и запуск
 
 ### MongoDB
 
-Установите MongoDB скачав дистрибутив с официального сайта или с помощью пакетного менеджера вашей ОС. Также можно воспользоваться Docker (см. ветку `feat/docker`.
-
-Выполните скрипт `test/mongodb_initial_stub.js` в консоли `mongo`.
+Установите MongoDB с [официального сайта](https://www.mongodb.com/) или через пакетный менеджер вашей ОС.
 
 ### Бэкенд
 
-Перейдите в папку с исходным кодом бэкенда
+```bash
+cd backend
+npm ci
+```
 
-`cd backend`
+Создайте `.env` из `.env.example`:
 
-Установите зависимости (точно такие же, как в package-lock.json) помощью команд
+```env
+DATABASE_DRIVER=mongodb
+DATABASE_URL=mongodb://127.0.0.1:27017/practicum
+```
 
-`npm ci` или `yarn install --frozen-lockfile`
+Запуск:
 
-Создайте `.env` файл из примера `.env.example`, в нём укажите:
+```bash
+npm run start:debug
+```
 
-* `DATABASE_DRIVER` - тип драйвера СУБД - в нашем случае это `mongodb` 
-* `DATABASE_URL` - адрес СУБД MongoDB, например `mongodb://127.0.0.1:27017/practicum`.  
+### Фронтенд
 
-MongoDB должна быть установлена и запущена.
+```bash
+npm run dev
+```
 
-Запустите бэкенд:
+## API
 
-`npm start:debug`
-
-Для проверки отправьте тестовый запрос с помощью Postman или `curl`.
-
-
-
-
+| Метод | Роут | Описание |
+|-------|------|----------|
+| GET | `/api/afisha/films/` | Список всех фильмов |
+| GET | `/api/afisha/films/:id/schedule` | Фильм с расписанием сеансов |
+| POST | `/api/afisha/order` | Бронирование билетов |
+| GET | `/content/afisha/*` | Статический контент (афиши) |
