@@ -1,25 +1,27 @@
-import { Injectable, Inject } from '@nestjs/common';
-import { Model } from 'mongoose';
-import { IFilmDoc, IScheduleDoc } from './film.schema';
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Film } from './entities/film.entity';
+import { Schedule } from './entities/schedule.entity';
 
 @Injectable()
 export class FilmsRepository {
   constructor(
-    @Inject('FILM_MODEL') private readonly filmModel: Model<IFilmDoc>,
+    @InjectRepository(Film)
+    private readonly filmRepo: Repository<Film>,
+    @InjectRepository(Schedule)
+    private readonly scheduleRepo: Repository<Schedule>,
   ) {}
 
-  async findAll(): Promise<Omit<IFilmDoc, 'schedule'>[]> {
-    return this.filmModel
-      .find({}, { _id: 0, __v: 0, schedule: 0 })
-      .lean()
-      .exec();
+  async findAll(): Promise<Film[]> {
+    return this.filmRepo.find();
   }
 
-  async findSchedule(filmId: string): Promise<IScheduleDoc[] | null> {
-    const film = await this.filmModel
-      .findOne({ id: filmId }, { _id: 0, __v: 0 })
-      .lean()
-      .exec();
+  async findSchedule(filmId: string): Promise<Schedule[] | null> {
+    const film = await this.filmRepo.findOne({
+      where: { id: filmId },
+      relations: ['schedule'],
+    });
     if (!film) {
       return null;
     }
@@ -29,15 +31,10 @@ export class FilmsRepository {
   async findSession(
     filmId: string,
     sessionId: string,
-  ): Promise<IScheduleDoc | null> {
-    const film = await this.filmModel
-      .findOne({ id: filmId, 'schedule.id': sessionId }, { 'schedule.$': 1 })
-      .lean()
-      .exec();
-    if (!film || !film.schedule || film.schedule.length === 0) {
-      return null;
-    }
-    return film.schedule[0];
+  ): Promise<Schedule | null> {
+    return this.scheduleRepo.findOne({
+      where: { id: sessionId, filmId },
+    });
   }
 
   async occupySeat(
@@ -45,18 +42,14 @@ export class FilmsRepository {
     sessionId: string,
     seatKey: string,
   ): Promise<boolean> {
-    const result = await this.filmModel.updateOne(
-      {
-        id: filmId,
-        schedule: {
-          $elemMatch: {
-            id: sessionId,
-            taken: { $ne: seatKey },
-          },
-        },
-      },
-      { $push: { 'schedule.$.taken': seatKey } },
-    );
-    return result.modifiedCount > 0;
+    const schedule = await this.scheduleRepo.findOne({
+      where: { id: sessionId, filmId },
+    });
+    if (!schedule || schedule.taken.includes(seatKey)) {
+      return false;
+    }
+    schedule.taken = [...schedule.taken, seatKey];
+    await this.scheduleRepo.save(schedule);
+    return true;
   }
 }
