@@ -83,4 +83,3 @@ npm run dev
 | GET | `/api/afisha/films/:id/schedule` | Фильм с расписанием сеансов |
 | POST | `/api/afisha/order` | Бронирование билетов |
 | GET | `/content/afisha/*` | Статический контент (афиши) |
-```
