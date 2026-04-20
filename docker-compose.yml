@@ -4,6 +4,7 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
     image: ghcr.io/vovchensky/film-react-nest-frontend:latest
+    restart: unless-stopped
     volumes:
       - frontend_dist:/app/dist
 
