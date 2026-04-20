@@ -4,9 +4,9 @@
 
 **Онлайн-сервис бронирования билетов в кинотеатр**
 
-[Открыть проект](http://81.26.182.142)
+[Открыть проект](http://vovchensky-film.nomorepartiessite.ru)
 
-<a href="http://81.26.182.142">
+<a href="http://vovchensky-film.nomorepartiessite.ru">
   <img src="./screenshot.jpg" alt="Скриншот проекта" width="1200" />
 </a>
 
