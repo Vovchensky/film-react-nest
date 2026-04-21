@@ -2,13 +2,7 @@
 
 <div align="center">
 
-**Онлайн-сервис бронирования билетов в кинотеатр**
-
-[Открыть проект](http://vovchensky-film.nomorepartiessite.ru)
-
-<a href="http://vovchensky-film.nomorepartiessite.ru">
   <img src="./screenshot.jpg" alt="Скриншот проекта" width="1200" />
-</a>
 
 </div>
 
